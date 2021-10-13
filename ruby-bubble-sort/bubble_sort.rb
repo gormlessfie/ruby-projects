@@ -1,30 +1,22 @@
-unsorted_array = Array.new(10) {rand(0...100)} #sorted: [0,1,2,4,5,9]
+# frozen_string_literal: true
 
+unsorted_array = Array.new(10) { rand(0...100) }
 
 def bubble_sort(array)
-    sorted = false
+  sorted = false
+  until sorted
+    swapped = false
+    for i in 1...array.length do
+      next if array[i - 1] < array[i]
 
-    until sorted do
-        swapped = false
-
-        for i in 1...array.length do
-            if array[i-1] < array[i]
-                next
-            else
-                swapped = true
-
-                temp = array[i-1]
-                array[i-1] = array[i]
-                array[i] = temp
-            end
-        end
-
-        if swapped == false
-            sorted = true
-        end
-
+      swapped = true
+      temp = array[i - 1]
+      array[i - 1] = array[i]
+      array[i] = temp
     end
-    array
+    sorted = true if swapped == false
+  end
+  array
 end
 
 sorted_array = bubble_sort(unsorted_array)
