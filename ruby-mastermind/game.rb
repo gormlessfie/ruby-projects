@@ -11,23 +11,45 @@ class Game
     @game_over = false
   end
 
-  def game_start
-    print_intro
-    computer_play(@player_two)
-
-    until @game_over
-      play_round
-      provide_hints
-      @player_one.reset_player_guess
+  def menu
+    puts "This is the game Mastermind.\nPlay against a computer? [y/n]"
+    case gets.chomp
+    when 'y'
+      game_start(false)
+    when 'n'
+      game_start(true)
+    else
+      puts 'Invalid choice.'
+      menu
     end
+  end
 
+  private
+
+  def game_start(human)
+    game_setup(human)
+    play_round until @game_over
     print_game_over
+    play_again
+  end
+
+  def game_setup(human)
+    if human
+      print_human_intro
+      @player_two.choose_code('secret', 'secret')
+      puts 'It is now the code-breaker\'s turn.'
+    else
+      print_intro
+      computer_play(@player_two)
+    end
   end
 
   def play_round
     p @player_two.send_peg_info('secret')
     player_play(@player_one)
     check_win
+    provide_hints
+    @player_one.reset_player_guess
   end
 
   def player_play(player)
@@ -38,12 +60,23 @@ class Game
     player.assign_secret_codes
   end
 
-  private
+  def play_again
+    return unless gets.chomp == 'Y'
+
+    @player_one = Player.new
+    @player_two = Computer.new
+    @game_over = false
+    menu
+  end
 
   def print_intro
     puts "\n"
-    puts 'This is the game Mastermind. The computer has chosen 4 colors and ' \
-         'you must guess the color and position.'
+    puts 'The computer has chosen 4 colors and you must guess the color and position.'
+    puts "\n"
+    rules_explanation
+  end
+
+  def rules_explanation
     puts 'For every round an incorrect guess is made, the opponent will gain a point.'
     puts 'You will also get 4 hint pegs about the opponent\'s secret code.'
     puts 'A black peg signals correct location and color.'
@@ -52,8 +85,16 @@ class Game
     puts "\n\n"
   end
 
+  def print_human_intro
+    puts "\n"
+    puts 'You are the code-maker and the opponent is the code-breaker.'
+    puts "\n"
+    rules_explanation
+  end
+
   def print_game_over
     puts 'You win! You have guessed all of the correct pegs'
+    puts 'Play again? [y/n]'
   end
 
   def check_win
@@ -82,7 +123,5 @@ class Game
     puts "There are #{color_match.size} white pegs."
   end
 end
-
-mastermind = Game.new(Player.new('billy'), Computer.new('computer'))
-
-mastermind.game_start
+mastermind = Game.new(Player.new, Computer.new)
+mastermind.menu

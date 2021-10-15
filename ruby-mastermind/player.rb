@@ -9,8 +9,7 @@ class Player
   attr_accessor :secret_code, :score, :guess
   attr_reader :name
 
-  def initialize(name)
-    @name = name
+  def initialize
     @secret_code = []
     @guess = []
     @score = 0
