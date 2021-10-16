@@ -9,6 +9,7 @@ class Game
     @player_one = player_one
     @player_two = player_two
     @game_over = false
+    @round = 1
   end
 
   def menu
@@ -28,7 +29,7 @@ class Game
 
   def game_start(human)
     game_setup(human)
-    play_round until @game_over
+    play_round until @game_over || @round == 12
     print_game_over
     play_again
   end
@@ -45,11 +46,12 @@ class Game
   end
 
   def play_round
-    p @player_two.send_peg_info('secret')
+    puts "Round #{@round}"
     player_play(@player_one)
     check_win
     provide_hints
     @player_one.reset_player_guess
+    @round += 1
   end
 
   def player_play(player)
@@ -77,12 +79,12 @@ class Game
   end
 
   def rules_explanation
-    puts 'For every round an incorrect guess is made, the opponent will gain a point.'
+    puts 'You have 12 rounds to guess the opponent\'s secret code.'
     puts 'You will also get 4 hint pegs about the opponent\'s secret code.'
     puts 'A black peg signals correct location and color.'
     puts 'A white peg signals correct color but incorrect location.'
     puts 'A missing peg signals incorrect location and color'
-    puts "\n\n"
+    puts "\n"
   end
 
   def print_human_intro
@@ -93,7 +95,8 @@ class Game
   end
 
   def print_game_over
-    puts 'You win! You have guessed all of the correct pegs'
+    puts @game_over ? 'You win! You have guessed all of the correct pegs' :
+                      'You lose! You ran out of turns.'
     puts 'Play again? [y/n]'
   end
 
