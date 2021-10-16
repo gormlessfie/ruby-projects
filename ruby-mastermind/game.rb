@@ -13,12 +13,22 @@ class Game
   end
 
   def menu
-    puts "This is the game Mastermind.\nPlay against a computer? [y/n]"
+    print "This is the game Mastermind.\nPlay against a computer? [y/n]:"
     case gets.chomp
     when 'y'
-      game_start(false)
+      print 'Do you want to be a code-breaker (1) or code-maker (2): '
+      case gets.chomp
+      when '1'
+        game_start_breaker(false)
+      when '2'
+        puts 'nothing happens!'
+        game_start_maker
+      else
+        puts 'Invalid choice.'
+        menu
+      end
     when 'n'
-      game_start(true)
+      game_start_breaker(true)
     else
       puts 'Invalid choice.'
       menu
@@ -27,10 +37,20 @@ class Game
 
   private
 
-  def game_start(human)
+  def game_start_maker
+    print_human_intro
+    @player_two.choose_code('secret', 'secret')
+    puts 'The computer will now attempt to break your code.'
+    puts "\nBreaking:\n"
+    play_round(true) until @game_over #|| @round == 12
+    print_game_over(true)
+    play_again
+  end
+
+  def game_start_breaker(human)
     game_setup(human)
-    play_round until @game_over || @round == 12
-    print_game_over
+    play_round(false) until @game_over || @round == 12
+    print_game_over(false)
     play_again
   end
 
@@ -45,17 +65,18 @@ class Game
     end
   end
 
-  def play_round
-    puts "Round #{@round}"
-    player_play(@player_one)
+  def play_round(computer)
+    puts "\nRound #{@round}"
+    p @player_two.send_peg_info('secret')
+    player_play(@player_one, computer)
     check_win
     provide_hints
     @player_one.reset_player_guess
     @round += 1
   end
 
-  def player_play(player)
-    player.choose_code('guess', 'guess')
+  def player_play(player, computer)
+    computer ? player.assign_guess_codes : player.choose_code('guess', 'guess')
   end
 
   def computer_play(player)
@@ -63,9 +84,9 @@ class Game
   end
 
   def play_again
-    return unless gets.chomp == 'Y'
+    return unless gets.chomp == 'y'
 
-    @player_one = Player.new
+    @player_one = Computer.new
     @player_two = Computer.new
     @game_over = false
     menu
@@ -94,9 +115,14 @@ class Game
     rules_explanation
   end
 
-  def print_game_over
-    puts @game_over ? 'You win! You have guessed all of the correct pegs' :
-                      'You lose! You ran out of turns.'
+  def print_game_over(computer_guesser)
+    if computer_guesser
+      puts "\n"
+      puts @game_over ? 'You lose! The computer have guessed all of the correct pegs' : 'You win! The computer ran out of turns.'
+    else
+      puts "\n"
+      puts @game_over ? 'You win! You have guessed all of the correct pegs' : 'You lose! You ran out of turns.'
+    end
     puts 'Play again? [y/n]'
   end
 
@@ -126,5 +152,5 @@ class Game
     puts "There are #{color_match.size} white pegs."
   end
 end
-mastermind = Game.new(Player.new, Computer.new)
+mastermind = Game.new(Computer.new, Computer.new)
 mastermind.menu
