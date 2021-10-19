@@ -42,7 +42,7 @@ class Game
     @player_two.choose_code('secret', 'secret')
     puts 'The computer will now attempt to break your code.'
     puts "\nBreaking:\n"
-    play_round(true) until @game_over #|| @round == 12
+    play_round(true) until @game_over || @round == 12
     print_game_over(true)
     play_again
   end

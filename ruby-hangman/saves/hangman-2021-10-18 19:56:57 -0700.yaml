@@ -1,0 +1,34 @@
+--- !ruby/object:Main
+player: !ruby/object:Player
+  previous_guesses:
+  - a
+  - e
+  - i
+  - o
+  - u
+  guess_attempts: 5
+key:
+- n
+- u
+- t
+- r
+- i
+- t
+- i
+- o
+- n
+- a
+- l
+solution:
+- _
+- u
+- _
+- _
+- i
+- _
+- i
+- o
+- _
+- a
+- _
+win: false
