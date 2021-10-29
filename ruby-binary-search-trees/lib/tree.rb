@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require './lib/node'
-require 'pry-byebug'
 
 # An implementation of binary search tree.
 class Tree
@@ -174,7 +173,7 @@ class Tree
   end
 
   def height(current_node = @root, most_height = 0)
-    return 0 if current_node.left.nil? || current_node.right.nil?
+    return 0 if current_node.nil?
 
     deepest_node = find_deepest_node(current_node)
     until current_node.data == deepest_node.data
@@ -201,21 +200,17 @@ class Tree
     deepest_node
   end
 
-  def balance?(current_node = @root)
-    return if current_node.leaf_node?
+  def balanced?(current_node = @root)
+    return if current_node.nil?
 
     height_left = height(current_node.left)
     height_right = height(current_node.right)
-
-    p "Current node: #{current_node.inspect}"
-    puts "\n"
-    p "left node: #{current_node.left.inspect}"
-    p height_left
-    puts "\n"
-    p "right node: #{current_node.right.inspect}"
-    p height_right
-
     return false if (height_left - height_right) > 1 || (height_right - height_left) > 1
+
+    balanced?(current_node.left)
+    balanced?(current_node.right)
+
+    true
   end
 
   def rebalance
@@ -241,24 +236,3 @@ class Tree
   end
 end
 
-arr = [10, 20, 30, 40, 50]
-
-tree = Tree.new(arr)
-tree.insert(5)
-tree.insert(3)
-tree.insert(55)
-tree.insert(21)
-tree.insert(11)
-tree.insert(6)
-tree.insert(4)
-tree.insert(41)
-tree.insert(42)
-tree.insert(43)
-tree.pretty_print
-
-tree.rebalance
-tree.pretty_print
-
-p tree.inorder
-p tree.preorder
-p tree.postorder
