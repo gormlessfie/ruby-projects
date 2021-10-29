@@ -93,7 +93,7 @@ class Tree
     end
   end
 
-  def level_order(current_node = @root)
+  def level_order(current_node = @root, &block)
     return if current_node.nil?
 
     queue = []
@@ -103,7 +103,7 @@ class Tree
       current = queue.shift
 
       if block_given?
-        yield current
+        block.call(current)
       else
         array.push(current_node.data)
       end
@@ -114,53 +114,68 @@ class Tree
     return array unless block_given?
   end
 
-  def level_order_recur(current_node = @root, queue = [], array = [])
+  def level_order_recur(current_node = @root, queue = [], array = [], &block)
     return if current_node.nil?
 
     queue.push(current_node.left) if current_node.left
     queue.push(current_node.right) if current_node.right
 
     if block_given?
-      yield current_node
+      block.call(current_node)
     else
       array.push(current_node.data)
     end
 
-    level_order_recur(queue.shift, queue, array)
+    level_order_recur(queue.shift, queue, array, &block)
     return array unless block_given?
   end
 
   # LEFT ROOT RIGHT
-  def inorder(current_node = @root, array = [])
+  def inorder(current_node = @root, array = [], &block)
     return if current_node.nil?
 
-    inorder(current_node.left, array)
-    @block_action.call(current_node, array, block_given?)
-    inorder(current_node.right, array)
+    inorder(current_node.left, array, &block)
+    if block_given?
+      block.call(current_node)
+    else
+      array.push(current_node.data)
+    end
+    inorder(current_node.right, array, &block)
     array
   end
 
   # ROOT LEFT RIGHT
-  def preorder(current_node = @root, array = [])
+  def preorder(current_node = @root, array = [], &block)
     return if current_node.nil?
 
-    @block_action.call(current_node, array, block_given?)
-    preorder(current_node.left, array)
-    preorder(current_node.right, array)
+    if block_given?
+      block.call(current_node)
+    else
+      array.push(current_node.data)
+    end
+    preorder(current_node.left, array, &block)
+    preorder(current_node.right, array, &block)
     array
   end
 
   #  LEFT RIGHT ROOT
-  def postorder(current_node = @root, array = [])
+  def postorder(current_node = @root, array = [], &block)
     return if current_node.nil?
 
-    postorder(current_node.left, array)
-    postorder(current_node.right, array)
-    @block_action.call(current_node, array, block_given?)
+    postorder(current_node.left, array, &block)
+    postorder(current_node.right, array, &block)
+
+    if block_given?
+      block.call(current_node)
+    else
+      array.push(current_node.data)
+    end
     array
   end
 
   def height(current_node = @root, most_height = 0)
+    return 0 if current_node.left.nil? || current_node.right.nil?
+
     deepest_node = find_deepest_node(current_node)
     until current_node.data == deepest_node.data
       current_node = current_node.data < deepest_node.data ? current_node.right : current_node.left
@@ -186,16 +201,25 @@ class Tree
     deepest_node
   end
 
-  def balanced(current_node = @root)
+  def balance?(current_node = @root)
+    return if current_node.leaf_node?
+
     height_left = height(current_node.left)
     height_right = height(current_node.right)
 
+    p "Current node: #{current_node.inspect}"
+    puts "\n"
+    p "left node: #{current_node.left.inspect}"
     p height_left
+    puts "\n"
+    p "right node: #{current_node.right.inspect}"
     p height_right
+
+    return false if (height_left - height_right) > 1 || (height_right - height_left) > 1
   end
 
   def rebalance
-    @root = build_tree(clean_array(level_order_recur(@root)))
+    @root = build_tree(clean_array(inorder(@root)))
   end
 
   def min_value(current_node = @root)
@@ -222,7 +246,19 @@ arr = [10, 20, 30, 40, 50]
 tree = Tree.new(arr)
 tree.insert(5)
 tree.insert(3)
+tree.insert(55)
+tree.insert(21)
+tree.insert(11)
+tree.insert(6)
+tree.insert(4)
+tree.insert(41)
+tree.insert(42)
+tree.insert(43)
 tree.pretty_print
 
-tree.balanced
-p tree.find_deepest_node
+tree.rebalance
+tree.pretty_print
+
+p tree.inorder
+p tree.preorder
+p tree.postorder
