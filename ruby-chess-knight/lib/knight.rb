@@ -123,6 +123,20 @@ class Knight
     possibility if possibility[0].between?(0, 7) && possibility[1].between?(0, 7)
   end
 
+  def print_summary(start, finish)
+    history_of_moves = []
+
+    history_of_moves.unshift(finish)
+    history_of_moves.unshift(lookup_square_info(finish)[:predecessor])
+
+    puts "You made it in #{lookup_square_info(finish)[:distance]} moves! The path was: "
+
+    history_of_moves.unshift(lookup_square_info(history_of_moves[0])[:predecessor]) until
+    history_of_moves[0] == start
+
+    p history_of_moves
+  end
+
   public
 
   def print_legal_moves
@@ -145,19 +159,5 @@ class Knight
         p "[#{ridx}, #{sidx}]: #{square}"
       end
     end
-  end
-
-  def print_summary(start, finish)
-    history_of_moves = []
-
-    history_of_moves.unshift(finish)
-    history_of_moves.unshift(lookup_square_info(finish)[:predecessor])
-
-    puts "You made it in #{lookup_square_info(finish)[:distance]} moves! The path was: "
-
-    history_of_moves.unshift(lookup_square_info(history_of_moves[0])[:predecessor]) until
-    history_of_moves[0] == start
-
-    p history_of_moves
   end
 end
