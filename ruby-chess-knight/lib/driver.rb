@@ -16,4 +16,4 @@ knight = Knight.new
 
 # knight.bfs_start_end([0, 0], [4, 4])
 
-knight.knight_moves([3, 2], [6, 4])
+knight.knight_moves([4, 7], [2, 0])

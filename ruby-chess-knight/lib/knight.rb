@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'pry-byebug'
 # This defines where a knight chess piece can move
 class Knight
   attr_accessor :chess_board, :legal_moves, :chess_board_info
@@ -16,6 +15,8 @@ class Knight
 
     print_summary(start, finish)
   end
+
+  private
 
   def bfs_start_end(start, finish)
     queue = []
@@ -121,6 +122,8 @@ class Knight
     end
     possibility if possibility[0].between?(0, 7) && possibility[1].between?(0, 7)
   end
+
+  public
 
   def print_legal_moves
     @legal_moves.each_with_index do |row, ridx|
