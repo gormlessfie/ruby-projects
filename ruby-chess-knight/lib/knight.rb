@@ -3,31 +3,39 @@
 require 'pry-byebug'
 # This defines where a knight chess piece can move
 class Knight
-  attr_accessor :chess_board, :legal_moves
-  def initialize
-    # board has a layout as such: An array of 8 arrays which hold 8 arrays each
-    # [
-    #  [ [[possible moves from [0,0]], [], [], [], [], [], [], [] ]
-    #  [ [], [], [], [], [], [], [], [] ]
-    #  [ [], [], [], [], [], [], [], [] ]
-    #  [ [], [], [], [], [], [], [], [] ]
-    #  [ [], [], [], [], [], [], [], [] ]
-    #  [ [], [], [], [], [], [], [], [] ]
-    #  [ [], [], [], [], [], [], [], [] ]
-    #  [ [], [], [], [], [], [], [], [] ]
-    # ]
-    @chess_board = build_board
-    @legal_moves = build_graph
-  end
-  # Takes an array with a starting coordinate [x, y] and finds the shortest path
-  # to finish [x, y] by only using possible moves below
+  attr_accessor :chess_board, :legal_moves, :chess_board_info
 
-  # [-2,-1], [-2, 1], 2 Left
-  # [-1, -2], [-1, 2], 1 Left
-  # [1, -2], [1, 2], 1 Right
-  # [2, -1], [2, 1], 2 Right
+  def initialize
+    @legal_moves = build_graph
+    @chess_board_info = build_info
+  end
 
   def knight_moves(start, finish)
+    p "Selected: #{start} , #{finish}"
+    bfs_start_end(start, finish)
+
+    print_summary(start, finish)
+  end
+
+  def bfs_start_end(start, finish)
+    queue = []
+    current = nil
+
+    queue.push(start)
+    lookup_square_info(start)[:distance] = 0
+
+    until queue.empty?
+      current = queue.shift
+      neighbor = @legal_moves[current[0]][current[1]]
+
+      neighbor.each do |node|
+        next unless lookup_square_info(node)[:distance].nil?
+
+        lookup_square_info(node)[:distance] = lookup_square_info(current)[:distance] + 1
+        lookup_square_info(node)[:predecessor] = current
+        queue.push(node)
+      end
+    end
   end
 
   def build_board
@@ -42,6 +50,28 @@ class Knight
   def build_graph
     temp_board = build_board
     assign_moves(temp_board)
+  end
+
+  def build_info
+    temp_board = build_board
+
+    temp_board.each_with_index do |row, ridx|
+      row.each_with_index do |_square, sidx|
+        temp_board[ridx][sidx] = {
+          distance: nil,
+          predecessor: nil
+        }
+      end
+    end
+    temp_board
+  end
+
+  def lookup_square_info(square)
+    @chess_board_info[square[0]][square[1]]
+  end
+
+  def lookup_legal_moves(array)
+    @legal_moves[array[0]][array[1]]
   end
 
   def assign_moves(array)
@@ -104,5 +134,27 @@ class Knight
     @chess_board.each do |row|
       p row
     end
+  end
+
+  def print_chess_board_info
+    @chess_board_info.each_with_index do |row, ridx|
+      row.each_with_index do |square, sidx|
+        p "[#{ridx}, #{sidx}]: #{square}"
+      end
+    end
+  end
+
+  def print_summary(start, finish)
+    history_of_moves = []
+
+    history_of_moves.unshift(finish)
+    history_of_moves.unshift(lookup_square_info(finish)[:predecessor])
+
+    puts "You made it in #{lookup_square_info(finish)[:distance]} moves! The path was: "
+
+    history_of_moves.unshift(lookup_square_info(history_of_moves[0])[:predecessor]) until
+    history_of_moves[0] == start
+
+    p history_of_moves
   end
 end
