@@ -40,7 +40,7 @@ describe ConnectFour do
       subject(:connect_four_drop) { described_class.new }
 
       it 'array gets unshifted and popped' do
-        expected_result = ['[1]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]']
+        expected_result = ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[1]']
         affected_column = connect_four_drop.instance_variable_get(:@board)[0]
         connect_four_drop.drop_piece(1, 1)
 
@@ -57,13 +57,13 @@ describe ConnectFour do
 
     context 'player chooses column 0' do
       subject(:connect_four_drop) { described_class.new }
-      setup_array = ['[1]', '[1]', '[1]', '[ ]', '[ ]', '[ ]']
+      setup_array = ['[ ]', '[ ]', '[ ]', '[1]', '[1]', '[1]']
       before do
         connect_four_drop.instance_variable_set(:@board, [setup_array])
       end
 
       it 'there are three pieces already' do
-        expected_result = ['[1]', '[1]', '[1]', '[1]', '[ ]', '[ ]']
+        expected_result = ['[ ]', '[ ]', '[1]', '[1]', '[1]', '[1]']
 
         expect { connect_four_drop.drop_piece(1, 1) }
           .to change { connect_four_drop.instance_variable_get(:@board)[0] }.to(expected_result)

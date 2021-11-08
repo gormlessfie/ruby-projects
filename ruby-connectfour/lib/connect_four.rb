@@ -70,6 +70,3 @@ class ConnectFour
     arranged_board
   end
 end
-
-c = ConnectFour.new
-c.game_loop
