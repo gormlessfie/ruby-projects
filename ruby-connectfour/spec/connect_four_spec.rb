@@ -204,8 +204,20 @@ describe ConnectFour do
     end
   end
 
-  describe '#determine_winner' do
-    describe 'checks the board' do
+  describe '#det_winner_vertical' do
+    describe 'checks columns for four consecutive vertical' do
+      
+    end
+  end
+
+  describe '#det_winner_horizontal' do
+    describe 'checks columns for four consecutive horizontal' do
+      
+    end
+  end
+
+  describe '#det_winner_diagonal' do
+    describe 'check column for four consecutive diagonal' do
       
     end
   end

@@ -54,9 +54,25 @@ class ConnectFour
 
   def display_board
     formatted_board = arrange_board(@board)
-    formatted_board.each_with_index do |row, idx|
-      p formatted_board[idx]
+    formatted_board.each_with_index do |row, ridx|
+      p row
     end
+  end
+
+  def det_winner_vertical
+    # check for any four consecutive values in single @board array
+    # ie. @board[0][0] = 1, @board[0][1] = 1, @board[0][2] = 1, @board[0][3] = 1
+  end
+
+  def det_winner_horizontal
+    # check for any four consecutive values from each @board array space
+    # ie. @board[0][0] = 1, @board[1][0] = 1, @board[2][0] = 1, @board[3][0] = 1
+  end
+
+  def det_winner_diagonal
+  end
+
+  def det_winner
   end
 
   def arrange_board(board)
@@ -69,4 +85,57 @@ class ConnectFour
     end
     arranged_board
   end
+
+  def display_raw_board
+    @board.each do |row|
+      p row
+    end
+  end
+
+  def compare_board
+    puts 'raw board: '
+    display_raw_board
+    puts "\n"
+    puts 'arranged board'
+    display_board
+  end
 end
+
+c = ConnectFour.new
+
+c.drop_piece(1, 1)
+c.drop_piece(1, 1)
+c.drop_piece(1, 1)
+c.drop_piece(1, 1)
+
+c.drop_piece(2, 2)
+c.drop_piece(2, 2)
+c.drop_piece(2, 2)
+c.drop_piece(2, 2)
+
+c.drop_piece(3, 3)
+c.drop_piece(3, 3)
+c.drop_piece(3, 3)
+c.drop_piece(3, 3)
+
+c.drop_piece(4, 4)
+c.drop_piece(4, 4)
+c.drop_piece(4, 4)
+c.drop_piece(4, 4)
+
+c.drop_piece(5, 5)
+c.drop_piece(5, 5)
+c.drop_piece(5, 5)
+c.drop_piece(5, 5)
+
+c.drop_piece(6, 6)
+c.drop_piece(6, 6)
+c.drop_piece(6, 6)
+c.drop_piece(6, 6)
+
+c.drop_piece(7, 7)
+c.drop_piece(7, 7)
+c.drop_piece(7, 7)
+c.drop_piece(7, 7)
+
+c.compare_board
