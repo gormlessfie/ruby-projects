@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require './player'.freeze
+require './lib/player'.freeze
 
 # The board for tic tac toe
 class Board
@@ -46,10 +46,9 @@ class Board
     ]
     win_condition.each do |win_array|
       if player.win_value.intersection(win_array).sort == win_array.sort
-        p player.win_value.intersection(win_array)
+        player.win_value.intersection(win_array)
         player.winner = true
       end
     end
-    p player.win_value
   end
 end

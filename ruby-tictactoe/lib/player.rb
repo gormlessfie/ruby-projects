@@ -5,8 +5,6 @@ class Player
   attr_accessor :winner, :win_value
   attr_reader :name
 
-  VALID_SELECTION = [1...9].freeze
-
   def initialize(name)
     @name = name
     @winner = false
@@ -15,12 +13,15 @@ class Player
 
   def make_selection
     print "It's #{@name}'s turn! Please choose a selection: "
-    input = gets.chomp.to_i
-    if input.between?(1, 9)
-      [input, @name]
-    else
+    verify_input
+  end
+
+  def verify_input
+    loop do
+      input = gets.chomp.to_i
+      return [input, @name] if input.between?(1, 9)
+
       puts 'Invalid selection, try again.'
-      make_selection
     end
   end
 end
