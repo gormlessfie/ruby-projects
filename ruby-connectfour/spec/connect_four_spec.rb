@@ -6,12 +6,12 @@ describe ConnectFour do
     context 'creates a 2d array of 7 x 6 - stubbed, doubled' do
       let(:connect_four_arrays) { double('making_arrays') }
       before do
-        set_array = Array.new(7) { Array.new(6, nil) }
+        set_array = Array.new(7) { Array.new(6, '[ ]') }
         allow(connect_four_arrays).to receive(:create_array).and_return(set_array)
       end
 
       it 'creates an array which contains 7 nested arrays' do
-        expect(connect_four_arrays.create_array).to eq(Array.new(7) { Array.new(6, nil) })
+        expect(connect_four_arrays.create_array).to eq(Array.new(7) { Array.new(6, '[ ]') })
       end
     end
 
@@ -28,9 +28,9 @@ describe ConnectFour do
         expect(first_subarray.length).to eq(6)
       end
 
-      it 'all elements in subarray are nil' do
+      it 'all elements in subarray are [ ]' do
         first_subarray = connect_four_board.create_array[0]
-        expect(first_subarray).to all(be_nil)
+        expect(first_subarray).to be_all { |space| space.match('[ ]') }
       end
     end
   end
@@ -40,16 +40,15 @@ describe ConnectFour do
       subject(:connect_four_drop) { described_class.new }
 
       it 'array gets unshifted and popped' do
-        expected_result = [1, nil, nil, nil, nil, nil]
-        affected_column = connect_four_drop.instance_variable_get(:@board)[1]
-
+        expected_result = ['[1]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]']
+        affected_column = connect_four_drop.instance_variable_get(:@board)[0]
         connect_four_drop.drop_piece(1, 1)
 
         expect(affected_column).to eq(expected_result)
       end
 
       it 'array maintains size of six' do
-        affected_column = connect_four_drop.instance_variable_get(:@board)[1]
+        affected_column = connect_four_drop.instance_variable_get(:@board)[0]
 
         expect { connect_four_drop.drop_piece(1, 1) }
           .not_to change { affected_column.length }
@@ -58,37 +57,36 @@ describe ConnectFour do
 
     context 'player chooses column 0' do
       subject(:connect_four_drop) { described_class.new }
-
+      setup_array = ['[1]', '[1]', '[1]', '[ ]', '[ ]', '[ ]']
       before do
-        connect_four_drop.instance_variable_get(:@board)[0] = [1, 1, 1, nil, nil, nil]
+        connect_four_drop.instance_variable_set(:@board, [setup_array])
       end
 
       it 'there are three pieces already' do
-        expected_result = [1, 1, 1, 1, nil, nil]
-        affected_column = connect_four_drop.instance_variable_get(:@board)[0]
-        expect { connect_four_drop.drop_piece(0, 1) }
-          .to change { affected_column }.to(expected_result)
+        expected_result = ['[1]', '[1]', '[1]', '[1]', '[ ]', '[ ]']
+
+        expect { connect_four_drop.drop_piece(1, 1) }
+          .to change { connect_four_drop.instance_variable_get(:@board)[0] }.to(expected_result)
       end
     end
 
     context 'player chooses a full column' do
       subject(:connect_four_drop) { described_class.new }
       let(:player) { 1 }
-
+      setup_array =  ['[1]', '[1]', '[1]', '[1]', '[1]', '[1]']
       before do
-        connect_four_drop.instance_variable_get(:@board)[0] = [1, 1, 1, 1, 1, 1]
+        connect_four_drop.instance_variable_set(:@board, [setup_array])
         allow(connect_four_drop).to receive(:puts).with('column full')
       end
 
       it 'player_turn is called' do
         expect(connect_four_drop).to receive(:player_turn).with(player)
-        connect_four_drop.drop_piece(0, 1)
+        connect_four_drop.drop_piece(1, 1)
       end
     end
   end
 
   describe '#player_input' do
-
     matcher :be_between_one_and_seven do
       match { |value| value.between?(1, 7) }
     end
@@ -180,6 +178,35 @@ describe ConnectFour do
         expect { connect_four_winner.update_winner(2) }
           .to change { connect_four_winner.instance_variable_get(:@winner) }.to(2)
       end
+    end
+  end
+
+  describe '#arrange_board' do
+    describe 'converts arrays (columns) into rows' do
+      context 'each row contains an element from each column' do
+        subject(:connect_four_arrange) { described_class.new }
+
+        it 'takes an element from each column' do
+          test_board = [[1, 2, 3], [4, 5, 6]]
+          expected = [[1, 4], [2, 5], [3, 6]]
+          result = connect_four_arrange.arrange_board(test_board)
+          expect(result).to eq(expected)
+        end
+
+        it 'takes an string element from each column' do
+          test_board = [['[1]', '[2]', '[3]'], ['[4]', '[5]', '[6]']]
+          expected = [['[1]', '[4]'], ['[2]', '[5]'], ['[3]', '[6]']]
+
+          result = connect_four_arrange.arrange_board(test_board)
+          expect(result).to eq(expected)
+        end
+      end
+    end
+  end
+
+  describe '#determine_winner' do
+    describe 'checks the board' do
+      
     end
   end
 end

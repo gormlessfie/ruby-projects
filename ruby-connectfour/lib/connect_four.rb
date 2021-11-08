@@ -8,7 +8,7 @@ class ConnectFour
   end
 
   def create_array
-    Array.new(7) { Array.new(6, nil) }
+    Array.new(7) { Array.new(6, '[ ]') }
   end
 
   def game_loop
@@ -20,10 +20,9 @@ class ConnectFour
   end
 
   def drop_piece(column, player)
-    column -= 1
-    if @board[column].last.nil?
-      @board[column].unshift(player)
-      @board[column].pop
+    if @board[column - 1].first.match('[ ]')
+      next_last_pos = @board[column - 1].rindex { |value| value.match('[ ]') }
+      @board[column - 1][next_last_pos] = "[#{player}]"
     else
       puts 'column full'
       player_turn(player)
@@ -31,12 +30,13 @@ class ConnectFour
   end
 
   def player_turn(player)
+    display_board
     drop_piece(player_input, player)
   end
 
   def player_input
     loop do
-      print 'Choose a column between 0-6 to place your token: '
+      print 'Choose a column between 1-7 to place your token: '
       input = gets.chomp.to_i
       return input if input.between?(1, 7)
 
@@ -51,4 +51,25 @@ class ConnectFour
   def winner?
     @winner.nil? ? false : true
   end
+
+  def display_board
+    formatted_board = arrange_board(@board)
+    formatted_board.each_with_index do |row, idx|
+      p formatted_board[idx]
+    end
+  end
+
+  def arrange_board(board)
+    arranged_board = Array.new(board[0].length) { Array.new(board.length) }
+
+    board[0].length.times do |i|
+      board.each_with_index do |_column, cidx|
+        arranged_board[i][cidx] = board[cidx][i]
+      end
+    end
+    arranged_board
+  end
 end
+
+c = ConnectFour.new
+c.game_loop
