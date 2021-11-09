@@ -325,8 +325,86 @@ describe ConnectFour do
     end
   end
 
-  describe '#det_winner_diagonal' do
-    describe 'check column for four consecutive diagonal' do
+  describe '#diagonal_helper_top_left' do
+    context 'takes in a space and checks 3 spaces top left of it' do
+      subject(:helper_top_left) { described_class.new }
+      it 'returns false when first top left space is empty' do
+        configured_transposed_board = [
+          ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
+          ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
+          ['[ ]', '[ ]', '[ ]', '[1]', '[ ]', '[ ]', '[ ]'],
+          ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
+          ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
+          ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]']
+        ]
+        helper_top_left.instance_variable_set(:@board, configured_transposed_board)
+        board = helper_top_left.instance_variable_get(:@board)
+
+        expect(helper_top_left.diagonal_helper_top_left?([2, 3], board)).to be false
+      end
+
+      it 'returns false when there are two consecutives, not four' do
+        configured_transposed_board = [
+          ['[ ]', '[1]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
+          ['[ ]', '[ ]', '[1]', '[ ]', '[ ]', '[ ]', '[ ]'],
+          ['[ ]', '[ ]', '[ ]', '[1]', '[ ]', '[ ]', '[ ]'],
+          ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
+          ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
+          ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]']
+        ]
+        helper_top_left.instance_variable_set(:@board, configured_transposed_board)
+        board = helper_top_left.instance_variable_get(:@board)
+
+        expect(helper_top_left.diagonal_helper_top_left?([2, 3], board)).to be false
+      end
+
+      it 'returns false when there are four consecutives starting from [3, 4]' do
+        configured_transposed_board = [
+          ['[ ]', '[1]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
+          ['[ ]', '[ ]', '[1]', '[ ]', '[ ]', '[ ]', '[ ]'],
+          ['[ ]', '[ ]', '[ ]', '[1]', '[ ]', '[ ]', '[ ]'],
+          ['[ ]', '[ ]', '[ ]', '[ ]', '[1]', '[ ]', '[ ]'],
+          ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
+          ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]']
+        ]
+        helper_top_left.instance_variable_set(:@board, configured_transposed_board)
+        board = helper_top_left.instance_variable_get(:@board)
+
+        expect(helper_top_left.diagonal_helper_top_left?([3, 4], board)).to be true
+      end
+
+      it 'returns false when invalid top left space' do
+        configured_transposed_board = [
+          ['[1]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
+          ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
+          ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
+          ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
+          ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
+          ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]']
+        ]
+        helper_top_left.instance_variable_set(:@board, configured_transposed_board)
+        board = helper_top_left.instance_variable_get(:@board)
+
+        expect(helper_top_left.diagonal_helper_top_left?([0, 0], board)).to be false
+      end
+
+      it 'returns false when there is different token' do
+        configured_transposed_board = [
+          ['[1]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
+          ['[ ]', '[1]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
+          ['[ ]', '[ ]', '[1]', '[ ]', '[ ]', '[ ]', '[ ]'],
+          ['[ ]', '[ ]', '[ ]', '[2]', '[ ]', '[ ]', '[ ]'],
+          ['[ ]', '[ ]', '[ ]', '[ ]', '[1]', '[ ]', '[ ]'],
+          ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[1]', '[ ]']
+        ]
+        helper_top_left.instance_variable_set(:@board, configured_transposed_board)
+        board = helper_top_left.instance_variable_get(:@board)
+
+        expect(helper_top_left.diagonal_helper_top_left?([5, 5], board)).to be false
+      end
     end
+  end
+
+  describe '#diagonal_helper_top_right' do
   end
 end

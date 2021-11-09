@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'pry-byebug'
 # ConnectFour creates a board and manipulates it.
 class ConnectFour
   def initialize
@@ -71,11 +72,54 @@ class ConnectFour
     consecutive_four?(converted_board)
   end
 
-  def det_winner_diagonal?
+  def det_winner_diagonal?(board = @board.transpose)
+    @board.each_with_index do |_row, ridx|
+      column.each_with_index do |column, cidx|
+        next if column == '[ ]'
+
+        return true if diagonal_helper_top_left?([ridx, cidx], board)
+      end
+    end
+    false
+  end
+
+  def diagonal_helper_top_left?(index, board)
+    key = [-1, -1]
+    count = 0
+    current_space = board[index[0]][index[1]]
+
+    3.times do
+      index[0] += key[0]
+      index[1] += key[1]
+      return false if index[0].negative? || index[1].negative? ||
+                      index[0] > 5 || index[1] > 6
+
+      diagonal_space = board[index[0]][index[1]]
+      return false if diagonal_space == '[ ]' || diagonal_space != current_space
+
+      count += 1
+    end
+
+    return true if count == 3
+  end
+
+  def diagonal_helper_top_right?(space)
+    key = [1, -1]
+
+  end
+
+  def diagonal_helper_bot_left?(space)
+    key = [-1, 1]
+
+  end
+
+  def diagonal_helper_bot_right?(space)
+    key = [1, 1]
+    
   end
 
   def det_winner(player)
-    winner = player if det_winner_vertical? || det_winner_horizontal? || det_winner_diagonal?
+    update_winner(player) if det_winner_vertical? || det_winner_horizontal? || det_winner_diagonal?
   end
 
   def consecutive_four?(board)
@@ -171,3 +215,18 @@ def fill_board
   c.instance_variable_set(:@board, c.instance_variable_get(:@board).transpose)
   c.display_board(c.instance_variable_get(:@board))
 end
+
+# c = ConnectFour.new
+
+# configured_transposed_board = [
+#   ['[ ]', '[]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
+#   ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
+#   ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
+#   ['[1]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
+#   ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
+#   ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
+#   ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]']
+# ]
+# c.instance_variable_set(:@board, configured_transposed_board)
+
+# p c.diagonal_helper_top_left?([3, 0], c.instance_variable_get(:@board))
