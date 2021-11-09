@@ -75,7 +75,7 @@ class ConnectFour
   end
 
   def det_winner(player)
-    @winner = player if det_winner_vertical? || det_winner_horizontal? || det_winner_diagonal?
+    winner = player if det_winner_vertical? || det_winner_horizontal? || det_winner_diagonal?
   end
 
   def consecutive_four?(board)
@@ -90,8 +90,7 @@ class ConnectFour
           count = 0
           next
         end
-
-        count += 1 if space == previous
+        space == previous ? count += 1 : count = 0
         previous = space
         return true if count == 3
       end
@@ -172,7 +171,3 @@ def fill_board
   c.instance_variable_set(:@board, c.instance_variable_get(:@board).transpose)
   c.display_board(c.instance_variable_get(:@board))
 end
-
-e = ConnectFour.new
-
-e.game_loop

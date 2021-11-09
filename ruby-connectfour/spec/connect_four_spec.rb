@@ -321,11 +321,6 @@ describe ConnectFour do
           det_horizontal.instance_variable_set(:@board, configured_board)
           expect(det_horizontal.det_winner_horizontal?).to be false
         end
-
-        it 'should be false' do 
-          
-          expect(det_horizontal.det_winner_horizontal?).to be false
-        end
       end
     end
   end
