@@ -12,10 +12,12 @@ class ConnectFour
   end
 
   def game_loop
-    return if winner?
-
     player_turn(1)
+    return game_over if winner?
+
     player_turn(2)
+    return game_over if winner?
+
     game_loop
   end
 
@@ -32,6 +34,7 @@ class ConnectFour
   def player_turn(player)
     display_board
     drop_piece(player_input, player)
+    det_winner(player)
   end
 
   def player_input
@@ -52,27 +55,46 @@ class ConnectFour
     @winner.nil? ? false : true
   end
 
-  def display_board
-    formatted_board = arrange_board(@board)
-    formatted_board.each_with_index do |row, ridx|
-      p row
-    end
+  def game_over
+    puts "\n"
+    puts "\n"
+    display_board
+    puts "Game over. #{@winner} wins!"
   end
 
-  def det_winner_vertical
+  # each [] in @board corresponds to each [] element in arranged board
+
+  def det_winner_vertical?
     # check for any four consecutive values in single @board array
     # ie. @board[0][0] = 1, @board[0][1] = 1, @board[0][2] = 1, @board[0][3] = 1
+
+    @board.each do |column| # each column [ [], [], [], [], [], [], [] ]
+      next if column.all?('[ ]')
+
+      count = 0
+      previous = nil
+
+      column.each do |space|
+        next if space == '[ ]'
+
+        count += 1 if space == previous
+        previous = space
+        return true if count == 3
+      end
+    end
+    false
   end
 
-  def det_winner_horizontal
+  def det_winner_horizontal?
     # check for any four consecutive values from each @board array space
     # ie. @board[0][0] = 1, @board[1][0] = 1, @board[2][0] = 1, @board[3][0] = 1
   end
 
-  def det_winner_diagonal
+  def det_winner_diagonal?
   end
 
-  def det_winner
+  def det_winner(player)
+    @winner = player if det_winner_vertical? || det_winner_horizontal? || det_winner_diagonal?
   end
 
   def arrange_board(board)
@@ -84,6 +106,13 @@ class ConnectFour
       end
     end
     arranged_board
+  end
+
+  def display_board
+    formatted_board = arrange_board(@board)
+    formatted_board.each_with_index do |row, ridx|
+      p row
+    end
   end
 
   def display_raw_board
@@ -103,39 +132,50 @@ end
 
 c = ConnectFour.new
 
-c.drop_piece(1, 1)
-c.drop_piece(1, 1)
-c.drop_piece(1, 1)
-c.drop_piece(1, 1)
+def fill_board
+  c.drop_piece(1, 1)
+  c.drop_piece(1, 1)
+  c.drop_piece(1, 1)
+  c.drop_piece(1, 1)
+  c.drop_piece(1, 1)
 
-c.drop_piece(2, 2)
-c.drop_piece(2, 2)
-c.drop_piece(2, 2)
-c.drop_piece(2, 2)
+  c.drop_piece(2, 2)
+  c.drop_piece(2, 2)
+  c.drop_piece(2, 2)
+  c.drop_piece(2, 2)
+  c.drop_piece(2, 2)
 
-c.drop_piece(3, 3)
-c.drop_piece(3, 3)
-c.drop_piece(3, 3)
-c.drop_piece(3, 3)
+  c.drop_piece(3, 3)
+  c.drop_piece(3, 3)
+  c.drop_piece(3, 3)
+  c.drop_piece(3, 3)
+  c.drop_piece(3, 3)
 
-c.drop_piece(4, 4)
-c.drop_piece(4, 4)
-c.drop_piece(4, 4)
-c.drop_piece(4, 4)
+  c.drop_piece(4, 4)
+  c.drop_piece(4, 4)
+  c.drop_piece(4, 4)
+  c.drop_piece(4, 4)
+  c.drop_piece(4, 4)
 
-c.drop_piece(5, 5)
-c.drop_piece(5, 5)
-c.drop_piece(5, 5)
-c.drop_piece(5, 5)
+  c.drop_piece(5, 5)
+  c.drop_piece(5, 5)
+  c.drop_piece(5, 5)
+  c.drop_piece(5, 5)
+  c.drop_piece(5, 5)
 
-c.drop_piece(6, 6)
-c.drop_piece(6, 6)
-c.drop_piece(6, 6)
-c.drop_piece(6, 6)
+  c.drop_piece(6, 6)
+  c.drop_piece(6, 6)
+  c.drop_piece(6, 6)
+  c.drop_piece(6, 6)
+  c.drop_piece(6, 6)
 
-c.drop_piece(7, 7)
-c.drop_piece(7, 7)
-c.drop_piece(7, 7)
-c.drop_piece(7, 7)
+  c.drop_piece(7, 7)
+  c.drop_piece(7, 7)
+  c.drop_piece(7, 7)
+  c.drop_piece(7, 7)
+  c.drop_piece(7, 7)
 
-c.compare_board
+  c.compare_board
+end
+
+c.game_loop

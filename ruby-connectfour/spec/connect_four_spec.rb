@@ -205,20 +205,78 @@ describe ConnectFour do
   end
 
   describe '#det_winner_vertical' do
-    describe 'checks columns for four consecutive vertical' do
-      
+
+    # configured_board = [
+    #   ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
+    #   ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
+    #   ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
+    #   ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
+    #   ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
+    #   ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
+    #   ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]']
+    # ]
+
+    describe 'checks each @board arrays if any array contains four consecutive elements' do
+      subject(:det_vertical) { described_class.new }
+
+      context 'returns true if there are four consecutive elements in the array' do
+        it 'there are four consecutive elements in @board[1]' do
+          configured_board = [
+            ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
+            ['[]', '[]', '[1]', '[1]', '[1]', '[1]'],
+            ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
+            ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
+            ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
+            ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
+            ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]']
+          ]
+
+          det_vertical.instance_variable_set(:@board, configured_board)
+          expect(det_vertical.det_winner_vertical?).to be true
+        end
+
+        it 'board is filled, only consecutive four is in @board[4]' do
+          configured_board = [
+            ['[1]', '[2]', '[1]', '[2]', '[1]', '[2]'],
+            ['[1]', '[2]', '[1]', '[2]', '[1]', '[2]'],
+            ['[1]', '[2]', '[1]', '[2]', '[1]', '[2]'],
+            ['[1]', '[2]', '[1]', '[2]', '[1]', '[2]'],
+            ['[2]', '[1]', '[1]', '[1]', '[1]', '[2]'], # <-- win @board[4]
+            ['[1]', '[2]', '[1]', '[2]', '[1]', '[2]'],
+            ['[1]', '[2]', '[1]', '[2]', '[1]', '[2]']
+          ]
+
+          det_vertical.instance_variable_set(:@board, configured_board)
+          expect(det_vertical.det_winner_vertical?).to be true
+        end
+      end
+
+      context 'returns false if there are not four consecutive elements' do
+        it 'there are no consecutives in any columns' do
+          configured_board = [
+            ['[1]', '[2]', '[1]', '[2]', '[1]', '[2]'],
+            ['[1]', '[2]', '[1]', '[2]', '[1]', '[2]'],
+            ['[1]', '[2]', '[1]', '[2]', '[1]', '[2]'],
+            ['[1]', '[2]', '[1]', '[2]', '[1]', '[2]'],
+            ['[2]', '[1]', '[2]', '[1]', '[1]', '[2]'],
+            ['[1]', '[2]', '[1]', '[2]', '[1]', '[2]'],
+            ['[1]', '[2]', '[1]', '[2]', '[1]', '[2]']
+          ]
+
+          det_vertical.instance_variable_set(:@board, configured_board)
+          expect(det_vertical.det_winner_vertical?).to be false
+        end
+      end
     end
   end
 
   describe '#det_winner_horizontal' do
     describe 'checks columns for four consecutive horizontal' do
-      
     end
   end
 
   describe '#det_winner_diagonal' do
     describe 'check column for four consecutive diagonal' do
-      
     end
   end
 end
