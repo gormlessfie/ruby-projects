@@ -99,17 +99,17 @@ describe ConnectFour do
 
       it 'player inputs 1' do
         allow(connect_four_input).to receive(:gets).and_return('1')
-        expect(connect_four_input.player_input).to be_between_one_and_seven
+        expect(connect_four_input.player_input(1)).to be_between_one_and_seven
       end
 
       it 'player inputs 3' do
         allow(connect_four_input).to receive(:gets).and_return('3')
-        expect(connect_four_input.player_input).to be_between_one_and_seven
+        expect(connect_four_input.player_input(1)).to be_between_one_and_seven
       end
 
       it 'player inputs 7' do
         allow(connect_four_input).to receive(:gets).and_return('7')
-        expect(connect_four_input.player_input).to be_between_one_and_seven
+        expect(connect_four_input.player_input(1)).to be_between_one_and_seven
       end
     end
 
@@ -124,19 +124,19 @@ describe ConnectFour do
       it 'player inputs invalid and then valid' do
         allow(connect_four_input).to receive(:gets).and_return('10', '4')
         expect(connect_four_input).to receive(:puts).with(error).once
-        connect_four_input.player_input
+        connect_four_input.player_input(1)
       end
 
       it 'player inputs 2 invalid inputs and then valid' do
         allow(connect_four_input).to receive(:gets).and_return('a', '32', '4')
         expect(connect_four_input).to receive(:puts).with(error).twice
-        connect_four_input.player_input
+        connect_four_input.player_input(1)
       end
 
       it 'player inputs a letter and then inputs valid' do
         allow(connect_four_input).to receive(:gets).and_return('a', '7')
         expect(connect_four_input).to receive(:puts).with(error).once
-        connect_four_input.player_input
+        connect_four_input.player_input(1)
       end
     end
   end
@@ -204,7 +204,7 @@ describe ConnectFour do
     end
   end
 
-  describe '#det_winner_vertical' do
+  describe '#consecutive_four?' do
 
     # configured_board = [
     #   ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
@@ -217,13 +217,13 @@ describe ConnectFour do
     # ]
 
     describe 'checks each @board arrays if any array contains four consecutive elements' do
-      subject(:det_vertical) { described_class.new }
+      subject(:consec_four) { described_class.new }
 
       context 'returns true if there are four consecutive elements in the array' do
         it 'there are four consecutive elements in @board[1]' do
           configured_board = [
             ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
-            ['[]', '[]', '[1]', '[1]', '[1]', '[1]'],
+            ['[ ]', '[ ]', '[1]', '[1]', '[1]', '[1]'],
             ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
             ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
             ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
@@ -231,8 +231,8 @@ describe ConnectFour do
             ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]']
           ]
 
-          det_vertical.instance_variable_set(:@board, configured_board)
-          expect(det_vertical.det_winner_vertical?).to be true
+          consec_four.instance_variable_set(:@board, configured_board)
+          expect(consec_four.consecutive_four?(configured_board)).to be true
         end
 
         it 'board is filled, only consecutive four is in @board[4]' do
@@ -246,8 +246,8 @@ describe ConnectFour do
             ['[1]', '[2]', '[1]', '[2]', '[1]', '[2]']
           ]
 
-          det_vertical.instance_variable_set(:@board, configured_board)
-          expect(det_vertical.det_winner_vertical?).to be true
+          consec_four.instance_variable_set(:@board, configured_board)
+          expect(consec_four.consecutive_four?(configured_board)).to be true
         end
       end
 
@@ -263,15 +263,70 @@ describe ConnectFour do
             ['[1]', '[2]', '[1]', '[2]', '[1]', '[2]']
           ]
 
-          det_vertical.instance_variable_set(:@board, configured_board)
-          expect(det_vertical.det_winner_vertical?).to be false
+          consec_four.instance_variable_set(:@board, configured_board)
+          expect(consec_four.consecutive_four?(configured_board)).to be false
         end
       end
     end
   end
 
   describe '#det_winner_horizontal' do
-    describe 'checks columns for four consecutive horizontal' do
+    describe 'checks each @board array for four consecutive horizontal in same index' do
+      subject(:det_horizontal) { described_class.new }
+
+      context 'returns true if @board[x][space] has 4 consecutives' do
+        it 'four consecutives on bottom row' do
+          configured_board = [
+            ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[1]'],
+            ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[1]'],
+            ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[1]'],
+            ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[1]'],
+            ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
+            ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
+            ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]']
+          ]
+
+          det_horizontal.instance_variable_set(:@board, configured_board)
+          expect(det_horizontal.det_winner_horizontal?).to be true
+        end
+
+        it 'four consecutives surrounded by nonconsecutive tokens, third row wins' do
+          configured_board = [
+            ['[1]', '[2]', '[1]', '[1]', '[2]', '[1]'],
+            ['[2]', '[1]', '[2]', '[2]', '[1]', '[2]'],
+            ['[1]', '[2]', '[2]', '[1]', '[2]', '[1]'],
+            ['[2]', '[1]', '[2]', '[2]', '[1]', '[2]'],
+            ['[2]', '[1]', '[2]', '[1]', '[2]', '[1]'],
+            ['[1]', '[2]', '[1]', '[2]', '[1]', '[2]'],
+            ['[1]', '[2]', '[1]', '[1]', '[2]', '[1]']
+          ]
+
+          det_horizontal.instance_variable_set(:@board, configured_board)
+          expect(det_horizontal.det_winner_horizontal?).to be true
+        end
+      end
+
+      context 'returns false if there are no 4 consecutives in a row' do
+        it 'whole board is nonconsecutive row-wise' do
+          configured_board = [
+            ['[1]', '[2]', '[1]', '[1]', '[2]', '[1]'],
+            ['[2]', '[1]', '[2]', '[2]', '[1]', '[2]'],
+            ['[1]', '[2]', '[2]', '[1]', '[2]', '[1]'],
+            ['[2]', '[1]', '[1]', '[2]', '[1]', '[2]'],
+            ['[2]', '[1]', '[2]', '[1]', '[2]', '[1]'],
+            ['[1]', '[2]', '[1]', '[2]', '[1]', '[2]'],
+            ['[1]', '[2]', '[1]', '[1]', '[2]', '[1]']
+          ]
+
+          det_horizontal.instance_variable_set(:@board, configured_board)
+          expect(det_horizontal.det_winner_horizontal?).to be false
+        end
+
+        it 'should be false' do 
+          
+          expect(det_horizontal.det_winner_horizontal?).to be false
+        end
+      end
     end
   end
 

@@ -33,13 +33,13 @@ class ConnectFour
 
   def player_turn(player)
     display_board
-    drop_piece(player_input, player)
+    drop_piece(player_input(player), player)
     det_winner(player)
   end
 
-  def player_input
+  def player_input(player)
     loop do
-      print 'Choose a column between 1-7 to place your token: '
+      print "#{player}'s turn. Choose a column between 1-7 to place your token: "
       input = gets.chomp.to_i
       return input if input.between?(1, 7)
 
@@ -62,32 +62,13 @@ class ConnectFour
     puts "Game over. #{@winner} wins!"
   end
 
-  # each [] in @board corresponds to each [] element in arranged board
-
-  def det_winner_vertical?
-    # check for any four consecutive values in single @board array
-    # ie. @board[0][0] = 1, @board[0][1] = 1, @board[0][2] = 1, @board[0][3] = 1
-
-    @board.each do |column| # each column [ [], [], [], [], [], [], [] ]
-      next if column.all?('[ ]')
-
-      count = 0
-      previous = nil
-
-      column.each do |space|
-        next if space == '[ ]'
-
-        count += 1 if space == previous
-        previous = space
-        return true if count == 3
-      end
-    end
-    false
+  def det_winner_vertical?(board = @board)
+    consecutive_four?(board)
   end
 
-  def det_winner_horizontal?
-    # check for any four consecutive values from each @board array space
-    # ie. @board[0][0] = 1, @board[1][0] = 1, @board[2][0] = 1, @board[3][0] = 1
+  def det_winner_horizontal?(board = @board)
+    converted_board = board.transpose
+    consecutive_four?(converted_board)
   end
 
   def det_winner_diagonal?
@@ -95,6 +76,27 @@ class ConnectFour
 
   def det_winner(player)
     @winner = player if det_winner_vertical? || det_winner_horizontal? || det_winner_diagonal?
+  end
+
+  def consecutive_four?(board)
+    board.each do |column|
+      next if column.all?('[ ]')
+
+      count = 0
+      previous = nil
+
+      column.each do |space|
+        if space == '[ ]'
+          count = 0
+          next
+        end
+
+        count += 1 if space == previous
+        previous = space
+        return true if count == 3
+      end
+    end
+    false
   end
 
   def arrange_board(board)
@@ -108,31 +110,23 @@ class ConnectFour
     arranged_board
   end
 
-  def display_board
-    formatted_board = arrange_board(@board)
-    formatted_board.each_with_index do |row, ridx|
-      p row
-    end
-  end
-
-  def display_raw_board
-    @board.each do |row|
+  def display_board(board = arrange_board(@board))
+    board.each do |row|
       p row
     end
   end
 
   def compare_board
     puts 'raw board: '
-    display_raw_board
+    display_board(@board)
     puts "\n"
     puts 'arranged board'
     display_board
   end
 end
 
-c = ConnectFour.new
-
 def fill_board
+  c = ConnectFour.new
   c.drop_piece(1, 1)
   c.drop_piece(1, 1)
   c.drop_piece(1, 1)
@@ -175,7 +169,10 @@ def fill_board
   c.drop_piece(7, 7)
   c.drop_piece(7, 7)
 
-  c.compare_board
+  c.instance_variable_set(:@board, c.instance_variable_get(:@board).transpose)
+  c.display_board(c.instance_variable_get(:@board))
 end
 
-c.game_loop
+e = ConnectFour.new
+
+e.game_loop
