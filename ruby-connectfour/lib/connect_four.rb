@@ -45,8 +45,11 @@ class ConnectFour
   end
 
   def player_input(player)
+    token = player == 1 ? "\u26AA".encode('utf-8') : "\u26AB".encode('utf-8')
+
+    puts "\n"
     loop do
-      print "It is #{player}'s turn. Choose a column between 1-7 to place your token: "
+      print "      It is  #{token}'s turn. Choose a column between 1-7 to place your token: "
       input = gets.chomp.to_i
       return input if input.between?(1, 7)
 
@@ -65,7 +68,7 @@ class ConnectFour
   def game_over
     puts intro_message
     display_board
-    puts "Game over. #{@winner} wins!"
+    puts "      Game over. #{@winner} wins!"
   end
 
   def det_winner_vertical?(board = @board)
@@ -177,7 +180,10 @@ class ConnectFour
 
   def display_board(board = arrange_board(@board))
     board.each do |row|
-      p row
+      row.each do |space|
+        print "      #{space}"
+      end
+      puts "\n"
     end
   end
 
@@ -197,6 +203,6 @@ class ConnectFour
   end
 end
 
-# c = ConnectFour.new
+c = ConnectFour.new
 
-# c.game_start
+c.game_start
