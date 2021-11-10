@@ -325,86 +325,264 @@ describe ConnectFour do
     end
   end
 
-  describe '#diagonal_helper_top_left' do
-    context 'takes in a space and checks 3 spaces top left of it' do
-      subject(:helper_top_left) { described_class.new }
-      it 'returns false when first top left space is empty' do
-        configured_transposed_board = [
-          ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
-          ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
-          ['[ ]', '[ ]', '[ ]', '[1]', '[ ]', '[ ]', '[ ]'],
-          ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
-          ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
-          ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]']
-        ]
-        helper_top_left.instance_variable_set(:@board, configured_transposed_board)
-        board = helper_top_left.instance_variable_get(:@board)
+  describe '#diagonal_helper?' do
+    describe 'checks for consecutive tokens within three diagonal spaces from given index' do
+      subject(:diagonal_helper) { described_class.new }
+      context 'diagonal_helper_top_left?, key is [-1, -1]' do
+        key = [-1, -1]
 
-        expect(helper_top_left.diagonal_helper_top_left?([2, 3], board)).to be false
+        it 'returns false when first top left space is empty' do
+          configured_transposed_board = [
+            ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
+            ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
+            ['[ ]', '[ ]', '[ ]', '[1]', '[ ]', '[ ]', '[ ]'],
+            ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
+            ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
+            ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]']
+          ]
+          diagonal_helper.instance_variable_set(:@board, configured_transposed_board)
+          board = diagonal_helper.instance_variable_get(:@board)
+
+          expect(diagonal_helper.diagonal_helper?([2, 3], board, key)).to be false
+        end
+
+        it 'returns false when there are two consecutives, not four' do
+          configured_transposed_board = [
+            ['[ ]', '[1]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
+            ['[ ]', '[ ]', '[1]', '[ ]', '[ ]', '[ ]', '[ ]'],
+            ['[ ]', '[ ]', '[ ]', '[1]', '[ ]', '[ ]', '[ ]'],
+            ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
+            ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
+            ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]']
+          ]
+          diagonal_helper.instance_variable_set(:@board, configured_transposed_board)
+          board = diagonal_helper.instance_variable_get(:@board)
+
+          expect(diagonal_helper.diagonal_helper?([2, 3], board, key)).to be false
+        end
+
+        it 'returns false when there are four consecutives starting from [3, 4]' do
+          configured_transposed_board = [
+            ['[ ]', '[1]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
+            ['[ ]', '[ ]', '[1]', '[ ]', '[ ]', '[ ]', '[ ]'],
+            ['[ ]', '[ ]', '[ ]', '[1]', '[ ]', '[ ]', '[ ]'],
+            ['[ ]', '[ ]', '[ ]', '[ ]', '[1]', '[ ]', '[ ]'],
+            ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
+            ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]']
+          ]
+          diagonal_helper.instance_variable_set(:@board, configured_transposed_board)
+          board = diagonal_helper.instance_variable_get(:@board)
+
+          expect(diagonal_helper.diagonal_helper?([3, 4], board, key)).to be true
+        end
+
+        it 'returns false when invalid top left space' do
+          configured_transposed_board = [
+            ['[1]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
+            ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
+            ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
+            ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
+            ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
+            ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]']
+          ]
+          diagonal_helper.instance_variable_set(:@board, configured_transposed_board)
+          board = diagonal_helper.instance_variable_get(:@board)
+
+          expect(diagonal_helper.diagonal_helper?([0, 0], board, key)).to be false
+        end
+
+        it 'returns false when there is different token' do
+          configured_transposed_board = [
+            ['[1]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
+            ['[ ]', '[1]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
+            ['[ ]', '[ ]', '[1]', '[ ]', '[ ]', '[ ]', '[ ]'],
+            ['[ ]', '[ ]', '[ ]', '[2]', '[ ]', '[ ]', '[ ]'],
+            ['[ ]', '[ ]', '[ ]', '[ ]', '[1]', '[ ]', '[ ]'],
+            ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[1]', '[ ]']
+          ]
+          diagonal_helper.instance_variable_set(:@board, configured_transposed_board)
+          board = diagonal_helper.instance_variable_get(:@board)
+
+          expect(diagonal_helper.diagonal_helper?([5, 5], board, key)).to be false
+        end
       end
 
-      it 'returns false when there are two consecutives, not four' do
-        configured_transposed_board = [
-          ['[ ]', '[1]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
-          ['[ ]', '[ ]', '[1]', '[ ]', '[ ]', '[ ]', '[ ]'],
-          ['[ ]', '[ ]', '[ ]', '[1]', '[ ]', '[ ]', '[ ]'],
-          ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
-          ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
-          ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]']
-        ]
-        helper_top_left.instance_variable_set(:@board, configured_transposed_board)
-        board = helper_top_left.instance_variable_get(:@board)
+      context 'diagonal_helper_top_right?, key is [-1, 1]' do
+        key = [-1, 1]
 
-        expect(helper_top_left.diagonal_helper_top_left?([2, 3], board)).to be false
+        it 'returns false when first top right space is empty' do
+          configured_transposed_board = [
+            ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
+            ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
+            ['[ ]', '[ ]', '[ ]', '[1]', '[ ]', '[ ]', '[ ]'],
+            ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
+            ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
+            ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]']
+          ]
+          diagonal_helper.instance_variable_set(:@board, configured_transposed_board)
+          board = diagonal_helper.instance_variable_get(:@board)
+
+          expect(diagonal_helper.diagonal_helper?([2, 3], board, key)).to be false
+        end
+
+        it 'returns false when first top right space is a different token' do
+          configured_transposed_board = [
+            ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
+            ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
+            ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[2]'],
+            ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[1]', '[ ]'],
+            ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
+            ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]']
+          ]
+          diagonal_helper.instance_variable_set(:@board, configured_transposed_board)
+          board = diagonal_helper.instance_variable_get(:@board)
+
+          expect(diagonal_helper.diagonal_helper?([3, 5], board, key)).to be false
+        end
+
+        it 'returns false when first top right space is invalid' do
+          configured_transposed_board = [
+            ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[1]', '[ ]'],
+            ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
+            ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
+            ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
+            ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
+            ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]']
+          ]
+          diagonal_helper.instance_variable_set(:@board, configured_transposed_board)
+          board = diagonal_helper.instance_variable_get(:@board)
+
+          expect(diagonal_helper.diagonal_helper?([0, 5], board, key)).to be false
+        end
+
+        it 'returns true when first top right space is empty' do
+          configured_transposed_board = [
+            ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[2]'],
+            ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[1]', '[ ]'],
+            ['[ ]', '[ ]', '[ ]', '[ ]', '[1]', '[ ]', '[ ]'],
+            ['[ ]', '[ ]', '[ ]', '[1]', '[ ]', '[ ]', '[ ]'],
+            ['[ ]', '[ ]', '[1]', '[ ]', '[ ]', '[ ]', '[ ]'],
+            ['[ ]', '[2]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]']
+          ]
+          diagonal_helper.instance_variable_set(:@board, configured_transposed_board)
+          board = diagonal_helper.instance_variable_get(:@board)
+
+          expect(diagonal_helper.diagonal_helper?([4, 2], board, key)).to be true
+        end
+
+        it 'returns false when there is different token at second immediate space' do
+          configured_transposed_board = [
+            ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[2]'],
+            ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[1]', '[ ]'],
+            ['[ ]', '[ ]', '[ ]', '[ ]', '[2]', '[ ]', '[ ]'],
+            ['[ ]', '[ ]', '[ ]', '[1]', '[ ]', '[ ]', '[ ]'],
+            ['[ ]', '[ ]', '[1]', '[ ]', '[ ]', '[ ]', '[ ]'],
+            ['[ ]', '[2]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]']
+          ]
+          diagonal_helper.instance_variable_set(:@board, configured_transposed_board)
+          board = diagonal_helper.instance_variable_get(:@board)
+
+          expect(diagonal_helper.diagonal_helper?([4, 2], board, key)).to be false
+        end
       end
 
-      it 'returns false when there are four consecutives starting from [3, 4]' do
-        configured_transposed_board = [
-          ['[ ]', '[1]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
-          ['[ ]', '[ ]', '[1]', '[ ]', '[ ]', '[ ]', '[ ]'],
-          ['[ ]', '[ ]', '[ ]', '[1]', '[ ]', '[ ]', '[ ]'],
-          ['[ ]', '[ ]', '[ ]', '[ ]', '[1]', '[ ]', '[ ]'],
-          ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
-          ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]']
-        ]
-        helper_top_left.instance_variable_set(:@board, configured_transposed_board)
-        board = helper_top_left.instance_variable_get(:@board)
+      context 'diagonal_helper_bot_left?, key is [1, -1]' do
+        key = [1, -1]
 
-        expect(helper_top_left.diagonal_helper_top_left?([3, 4], board)).to be true
+        it 'returns false when first bot left space is empty' do
+          configured_transposed_board = [
+            ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
+            ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
+            ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
+            ['[ ]', '[1]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
+            ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
+            ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]']
+          ]
+          diagonal_helper.instance_variable_set(:@board, configured_transposed_board)
+          board = diagonal_helper.instance_variable_get(:@board)
+
+          expect(diagonal_helper.diagonal_helper?([3, 1], board, key)).to be false
+        end
+
+        it 'returns false when first bot left space is invalid' do
+          configured_transposed_board = [
+            ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
+            ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
+            ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
+            ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
+            ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
+            ['[ ]', '[ ]', '[ ]', '[ ]', '[1]', '[ ]', '[ ]']
+          ]
+          diagonal_helper.instance_variable_set(:@board, configured_transposed_board)
+          board = diagonal_helper.instance_variable_get(:@board)
+
+          expect(diagonal_helper.diagonal_helper?([5, 4], board, key)).to be false
+        end
+
+        it 'returns true when there is consecutive diagonal from [2, 6]' do
+          configured_transposed_board = [
+            ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
+            ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
+            ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[1]'],
+            ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[1]', '[ ]'],
+            ['[ ]', '[ ]', '[ ]', '[ ]', '[1]', '[ ]', '[ ]'],
+            ['[ ]', '[ ]', '[ ]', '[1]', '[ ]', '[ ]', '[ ]']
+          ]
+          diagonal_helper.instance_variable_set(:@board, configured_transposed_board)
+          board = diagonal_helper.instance_variable_get(:@board)
+
+          expect(diagonal_helper.diagonal_helper?([2, 6], board, key)).to be true
+        end
       end
 
-      it 'returns false when invalid top left space' do
-        configured_transposed_board = [
-          ['[1]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
-          ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
-          ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
-          ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
-          ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
-          ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]']
-        ]
-        helper_top_left.instance_variable_set(:@board, configured_transposed_board)
-        board = helper_top_left.instance_variable_get(:@board)
+      context 'diagonal_helper_bot_right?, key is [1, 1]' do
+        key = [1, 1]
 
-        expect(helper_top_left.diagonal_helper_top_left?([0, 0], board)).to be false
-      end
+        it 'returns false when first bot right space is empty' do
+          configured_transposed_board = [
+            ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
+            ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
+            ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
+            ['[ ]', '[1]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
+            ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
+            ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]']
+          ]
+          diagonal_helper.instance_variable_set(:@board, configured_transposed_board)
+          board = diagonal_helper.instance_variable_get(:@board)
 
-      it 'returns false when there is different token' do
-        configured_transposed_board = [
-          ['[1]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
-          ['[ ]', '[1]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
-          ['[ ]', '[ ]', '[1]', '[ ]', '[ ]', '[ ]', '[ ]'],
-          ['[ ]', '[ ]', '[ ]', '[2]', '[ ]', '[ ]', '[ ]'],
-          ['[ ]', '[ ]', '[ ]', '[ ]', '[1]', '[ ]', '[ ]'],
-          ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[1]', '[ ]']
-        ]
-        helper_top_left.instance_variable_set(:@board, configured_transposed_board)
-        board = helper_top_left.instance_variable_get(:@board)
+          expect(diagonal_helper.diagonal_helper?([3, 1], board, key)).to be false
+        end
 
-        expect(helper_top_left.diagonal_helper_top_left?([5, 5], board)).to be false
+        it 'returns false when first bot right space is invalid' do
+          configured_transposed_board = [
+            ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
+            ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
+            ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
+            ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
+            ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
+            ['[ ]', '[1]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]']
+          ]
+          diagonal_helper.instance_variable_set(:@board, configured_transposed_board)
+          board = diagonal_helper.instance_variable_get(:@board)
+
+          expect(diagonal_helper.diagonal_helper?([5, 1], board, key)).to be false
+        end
+
+        it 'returns true when there is consecutive diagonal from [0, 1]' do
+          configured_transposed_board = [
+            ['[ ]', '[1]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
+            ['[ ]', '[ ]', '[1]', '[ ]', '[ ]', '[ ]', '[ ]'],
+            ['[ ]', '[ ]', '[ ]', '[1]', '[ ]', '[ ]', '[ ]'],
+            ['[ ]', '[ ]', '[ ]', '[ ]', '[1]', '[ ]', '[ ]'],
+            ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
+            ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]']
+          ]
+          diagonal_helper.instance_variable_set(:@board, configured_transposed_board)
+          board = diagonal_helper.instance_variable_get(:@board)
+
+          expect(diagonal_helper.diagonal_helper?([0, 1], board, key)).to be true
+        end
       end
     end
-  end
-
-  describe '#diagonal_helper_top_right' do
   end
 end

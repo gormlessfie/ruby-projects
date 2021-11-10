@@ -8,6 +8,8 @@ class ConnectFour
     @winner = nil
   end
 
+  def game_start
+  end
   def create_array
     Array.new(7) { Array.new(6, '[ ]') }
   end
@@ -73,11 +75,14 @@ class ConnectFour
   end
 
   def det_winner_diagonal?(board = @board.transpose)
-    @board.each_with_index do |_row, ridx|
-      column.each_with_index do |column, cidx|
+    board.each_with_index do |row, ridx|
+      row.each_with_index do |column, cidx|
         next if column == '[ ]'
 
-        return true if diagonal_helper_top_left?([ridx, cidx], board)
+        return true if diagonal_helper_top_left?([ridx, cidx], board) ||
+                       diagonal_helper_top_right?([ridx, cidx], board) ||
+                       diagonal_helper_bot_left?([ridx, cidx], board) ||
+                       diagonal_helper_bot_right?([ridx, cidx], board)
       end
     end
     false
@@ -85,6 +90,25 @@ class ConnectFour
 
   def diagonal_helper_top_left?(index, board)
     key = [-1, -1]
+    diagonal_helper?(index, board, key)
+  end
+
+  def diagonal_helper_top_right?(index, board)
+    key = [-1, 1]
+    diagonal_helper?(index, board, key)
+  end
+
+  def diagonal_helper_bot_left?(index, board)
+    key = [1, -1]
+    diagonal_helper?(index, board, key)
+  end
+
+  def diagonal_helper_bot_right?(index, board)
+    key = [1, 1]
+    diagonal_helper?(index, board, key)
+  end
+
+  def diagonal_helper?(index, board, key)
     count = 0
     current_space = board[index[0]][index[1]]
 
@@ -101,21 +125,6 @@ class ConnectFour
     end
 
     return true if count == 3
-  end
-
-  def diagonal_helper_top_right?(space)
-    key = [1, -1]
-
-  end
-
-  def diagonal_helper_bot_left?(space)
-    key = [-1, 1]
-
-  end
-
-  def diagonal_helper_bot_right?(space)
-    key = [1, 1]
-    
   end
 
   def det_winner(player)
@@ -145,6 +154,9 @@ class ConnectFour
   def arrange_board(board)
     arranged_board = Array.new(board[0].length) { Array.new(board.length) }
 
+    white_circle = "\u26AA".encode('utf-8')
+    black_circle = "\u26AB".encode('utf-8')
+
     board[0].length.times do |i|
       board.each_with_index do |_column, cidx|
         arranged_board[i][cidx] = board[cidx][i]
@@ -166,67 +178,19 @@ class ConnectFour
     puts 'arranged board'
     display_board
   end
+
+  def intro_message
+    message = %Q(
+      This is Connect-4!
+
+      This is a game where you try to place four tokens consecutively while
+      taking turns with your opponent.
+
+      In order to win, you must get four consecutive tokens either horizontally,
+      vertically, or diagonally.
+
+      Player 1 uses token #{"\u26AA".encode('utf-8')}
+      Player 2 uses token #{"\u26AB".encode('utf-8')}
+    )
+  end
 end
-
-def fill_board
-  c = ConnectFour.new
-  c.drop_piece(1, 1)
-  c.drop_piece(1, 1)
-  c.drop_piece(1, 1)
-  c.drop_piece(1, 1)
-  c.drop_piece(1, 1)
-
-  c.drop_piece(2, 2)
-  c.drop_piece(2, 2)
-  c.drop_piece(2, 2)
-  c.drop_piece(2, 2)
-  c.drop_piece(2, 2)
-
-  c.drop_piece(3, 3)
-  c.drop_piece(3, 3)
-  c.drop_piece(3, 3)
-  c.drop_piece(3, 3)
-  c.drop_piece(3, 3)
-
-  c.drop_piece(4, 4)
-  c.drop_piece(4, 4)
-  c.drop_piece(4, 4)
-  c.drop_piece(4, 4)
-  c.drop_piece(4, 4)
-
-  c.drop_piece(5, 5)
-  c.drop_piece(5, 5)
-  c.drop_piece(5, 5)
-  c.drop_piece(5, 5)
-  c.drop_piece(5, 5)
-
-  c.drop_piece(6, 6)
-  c.drop_piece(6, 6)
-  c.drop_piece(6, 6)
-  c.drop_piece(6, 6)
-  c.drop_piece(6, 6)
-
-  c.drop_piece(7, 7)
-  c.drop_piece(7, 7)
-  c.drop_piece(7, 7)
-  c.drop_piece(7, 7)
-  c.drop_piece(7, 7)
-
-  c.instance_variable_set(:@board, c.instance_variable_get(:@board).transpose)
-  c.display_board(c.instance_variable_get(:@board))
-end
-
-# c = ConnectFour.new
-
-# configured_transposed_board = [
-#   ['[ ]', '[]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
-#   ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
-#   ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
-#   ['[1]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
-#   ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
-#   ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]'],
-#   ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[ ]']
-# ]
-# c.instance_variable_set(:@board, configured_transposed_board)
-
-# p c.diagonal_helper_top_left?([3, 0], c.instance_variable_get(:@board))
