@@ -6,12 +6,12 @@ describe ConnectFour do
     context 'creates a 2d array of 7 x 6 - stubbed, doubled' do
       let(:connect_four_arrays) { double('making_arrays') }
       before do
-        set_array = Array.new(7) { Array.new(6, '[ ]') }
+        set_array = Array.new(7) { Array.new(6, '[   ]') }
         allow(connect_four_arrays).to receive(:create_array).and_return(set_array)
       end
 
       it 'creates an array which contains 7 nested arrays' do
-        expect(connect_four_arrays.create_array).to eq(Array.new(7) { Array.new(6, '[ ]') })
+        expect(connect_four_arrays.create_array).to eq(Array.new(7) { Array.new(6, '[   ]') })
       end
     end
 
@@ -28,9 +28,9 @@ describe ConnectFour do
         expect(first_subarray.length).to eq(6)
       end
 
-      it 'all elements in subarray are [ ]' do
+      it 'all elements in subarray are [   ]' do
         first_subarray = connect_four_board.create_array[0]
-        expect(first_subarray).to be_all { |space| space.match('[ ]') }
+        expect(first_subarray).to be_all { |space| space.match('[   ]') }
       end
     end
   end
@@ -40,7 +40,7 @@ describe ConnectFour do
       subject(:connect_four_drop) { described_class.new }
 
       it 'array gets unshifted and popped' do
-        expected_result = ['[ ]', '[ ]', '[ ]', '[ ]', '[ ]', '[1]']
+        expected_result = ['[   ]', '[   ]', '[   ]', '[   ]', '[   ]', '[1]']
         affected_column = connect_four_drop.instance_variable_get(:@board)[0]
         connect_four_drop.drop_piece(1, 1)
 
@@ -57,13 +57,13 @@ describe ConnectFour do
 
     context 'player chooses column 0' do
       subject(:connect_four_drop) { described_class.new }
-      setup_array = ['[ ]', '[ ]', '[ ]', '[1]', '[1]', '[1]']
+      setup_array = ['[   ]', '[   ]', '[   ]', '[1]', '[1]', '[1]']
       before do
         connect_four_drop.instance_variable_set(:@board, [setup_array])
       end
 
       it 'there are three pieces already' do
-        expected_result = ['[ ]', '[ ]', '[1]', '[1]', '[1]', '[1]']
+        expected_result = ['[   ]', '[   ]', '[1]', '[1]', '[1]', '[1]']
 
         expect { connect_four_drop.drop_piece(1, 1) }
           .to change { connect_four_drop.instance_variable_get(:@board)[0] }.to(expected_result)
@@ -187,15 +187,15 @@ describe ConnectFour do
         subject(:connect_four_arrange) { described_class.new }
 
         it 'takes an element from each column' do
-          test_board = [[1, 2, 3], [4, 5, 6]]
-          expected = [[1, 4], [2, 5], [3, 6]]
+          test_board = [[9, 8, 3], [4, 5, 6]]
+          expected = [[9, 4], [8, 5], [3, 6]]
           result = connect_four_arrange.arrange_board(test_board)
           expect(result).to eq(expected)
         end
 
         it 'takes an string element from each column' do
-          test_board = [['[1]', '[2]', '[3]'], ['[4]', '[5]', '[6]']]
-          expected = [['[1]', '[4]'], ['[2]', '[5]'], ['[3]', '[6]']]
+          test_board = [['[9]', '[8]', '[3]'], ['[4]', '[5]', '[6]']]
+          expected = [['[9]', '[4]'], ['[8]', '[5]'], ['[3]', '[6]']]
 
           result = connect_four_arrange.arrange_board(test_board)
           expect(result).to eq(expected)

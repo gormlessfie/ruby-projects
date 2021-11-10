@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'pry-byebug'
 # ConnectFour creates a board and manipulates it.
 class ConnectFour
   def initialize
@@ -9,9 +8,12 @@ class ConnectFour
   end
 
   def game_start
+    system('clear')
+    game_loop
   end
+
   def create_array
-    Array.new(7) { Array.new(6, '[ ]') }
+    Array.new(7) { Array.new(6, '[   ]') }
   end
 
   def game_loop
@@ -35,14 +37,16 @@ class ConnectFour
   end
 
   def player_turn(player)
+    puts intro_message
     display_board
     drop_piece(player_input(player), player)
     det_winner(player)
+    system('clear')
   end
 
   def player_input(player)
     loop do
-      print "#{player}'s turn. Choose a column between 1-7 to place your token: "
+      print "It is #{player}'s turn. Choose a column between 1-7 to place your token: "
       input = gets.chomp.to_i
       return input if input.between?(1, 7)
 
@@ -59,8 +63,7 @@ class ConnectFour
   end
 
   def game_over
-    puts "\n"
-    puts "\n"
+    puts intro_message
     display_board
     puts "Game over. #{@winner} wins!"
   end
@@ -77,7 +80,7 @@ class ConnectFour
   def det_winner_diagonal?(board = @board.transpose)
     board.each_with_index do |row, ridx|
       row.each_with_index do |column, cidx|
-        next if column == '[ ]'
+        next if column == '[   ]'
 
         return true if diagonal_helper_top_left?([ridx, cidx], board) ||
                        diagonal_helper_top_right?([ridx, cidx], board) ||
@@ -119,7 +122,7 @@ class ConnectFour
                       index[0] > 5 || index[1] > 6
 
       diagonal_space = board[index[0]][index[1]]
-      return false if diagonal_space == '[ ]' || diagonal_space != current_space
+      return false if diagonal_space == '[   ]' || diagonal_space != current_space
 
       count += 1
     end
@@ -133,13 +136,13 @@ class ConnectFour
 
   def consecutive_four?(board)
     board.each do |column|
-      next if column.all?('[ ]')
+      next if column.all?('[   ]')
 
       count = 0
       previous = nil
 
       column.each do |space|
-        if space == '[ ]'
+        if space == '[   ]'
           count = 0
           next
         end
@@ -159,7 +162,14 @@ class ConnectFour
 
     board[0].length.times do |i|
       board.each_with_index do |_column, cidx|
-        arranged_board[i][cidx] = board[cidx][i]
+        arranged_board[i][cidx] = case board[cidx][i]
+                                  when '[1]'
+                                    "[ #{white_circle}]"
+                                  when '[2]'
+                                    "[ #{black_circle}]"
+                                  else
+                                    board[cidx][i]
+                                  end
       end
     end
     arranged_board
@@ -171,16 +181,8 @@ class ConnectFour
     end
   end
 
-  def compare_board
-    puts 'raw board: '
-    display_board(@board)
-    puts "\n"
-    puts 'arranged board'
-    display_board
-  end
-
   def intro_message
-    message = %Q(
+    %(
       This is Connect-4!
 
       This is a game where you try to place four tokens consecutively while
@@ -194,3 +196,7 @@ class ConnectFour
     )
   end
 end
+
+# c = ConnectFour.new
+
+# c.game_start
